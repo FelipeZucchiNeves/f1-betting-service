@@ -11,9 +11,11 @@ import com.f1betting.repository.DriverRepository;
 import com.f1betting.repository.EventRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.cache.Cache;
 import org.springframework.cache.CacheManager;
+import org.springframework.context.annotation.Profile;
 import org.springframework.context.event.EventListener;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -38,8 +40,15 @@ public class EventSyncService {
     private final DriverMapper driverMapper;
     private final CacheManager cacheManager;
 
+    @Value("${app.scheduling.enabled:true}")
+    private boolean schedulingEnabled;
+
     @Scheduled(initialDelayString = "${sync.initialDelay:1000}", fixedRateString = "${sync.fixedRate:300000}")
     public void scheduledSync() {
+        if (!schedulingEnabled) {
+            log.debug("Scheduling is disabled. Skipping sync.");
+            return;
+        }
         log.info("Start sync events");
         boolean isDatabaseEmpty = eventRepository.count() == 0;
         if (isDatabaseEmpty) {

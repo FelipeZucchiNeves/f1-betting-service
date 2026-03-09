@@ -124,7 +124,7 @@ Errors are returned using a consistent JSON structure (e.g., `ErrorResponse`) in
 ## Testing
 Run the full test suite:
 ```bash
-./mvnw test
+mvn test
 ```
 
 Integration tests cover core flows (bet placement, validations, settlement) using MockMvc.

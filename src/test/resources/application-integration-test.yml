@@ -22,6 +22,10 @@ spring:
   cache:
     type: caffeine
 
+app:
+  scheduling:
+    enabled: false
+
 # OpenF1 API Configuration (will be mocked)
 openf1:
   api:
