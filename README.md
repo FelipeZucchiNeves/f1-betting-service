@@ -45,7 +45,7 @@ Request/response DTOs are modeled as Java records to enforce immutability and re
 
 ### With Docker
 ```bash
-  docker-compose up --build
+docker-compose up --build
 ```
 
 The API will be available at:
@@ -56,8 +56,50 @@ Swagger UI:
 
 ### With Maven
 ```bash
-  ./mvnw spring-boot:run
+./mvnw spring-boot:run
 ```
+
+## 🧪 Testing the API
+
+### 1. Pre-configured Data
+Upon startup, the system automatically creates a default user to facilitate immediate testing:
+- **User ID:** `1`
+- **Initial Balance:** `$100.00`
+- **Currency:** `USD`
+
+### 2. Quick Test Flow
+To place your first bet, you can follow this sequence:
+
+1. **List Events:** Find an active event and note the `id` and a `driverId` from the driver market.
+   ```bash
+   curl -X GET http://localhost:8080/api/events
+   ```
+
+2. **Place a Bet:** Use the pre-configured User ID `1`.
+   ```bash
+   curl -X POST http://localhost:8080/api/bets \
+     -H "Content-Type: application/json" \
+     -d '{
+       "userId": 1,
+       "eventId": 1,
+       "driverId": 44,
+       "stake": 10.00
+     }'
+   ```
+
+3. **Check Balance:** Verify the balance was deducted.
+   ```bash
+   curl -X GET http://localhost:8080/api/users/1/balance
+   ```
+
+4. **Simulate Outcome:** Settle all pending bets for an event.
+   ```bash
+   curl -X POST http://localhost:8080/api/events/1/outcome \
+     -H "Content-Type: application/json" \
+     -d '{
+       "winnerDriverId": 44
+     }'
+   ```
 
 ## API Endpoints (High Level)
 
@@ -82,7 +124,7 @@ Errors are returned using a consistent JSON structure (e.g., `ErrorResponse`) in
 ## Testing
 Run the full test suite:
 ```bash
-  ./mvnw test
+./mvnw test
 ```
 
 Integration tests cover core flows (bet placement, validations, settlement) using MockMvc.
@@ -92,4 +134,3 @@ Integration tests cover core flows (bet placement, validations, settlement) usin
 - Redis cache for high-traffic read endpoints
 - Message queue for async settlement processing (Kafka/RabbitMQ)
 - Observability: metrics + tracing (Micrometer/Prometheus/Grafana)
-
