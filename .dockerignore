@@ -1,0 +1,30 @@
+# Build artifacts
+target/
+*.jar
+
+# IDE files
+.idea/
+*.iml
+.vscode/
+.settings/
+.project
+.classpath
+
+# Git
+.git/
+.gitignore
+
+# Documentation
+*.md
+
+# Docker files (prevent recursive copying)
+Dockerfile
+docker-compose.yml
+
+# Logs
+*.log
+logs/
+
+# Temp files
+*.tmp
+*.swp

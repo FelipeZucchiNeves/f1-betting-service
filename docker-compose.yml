@@ -1,0 +1,49 @@
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:15-alpine
+    container_name: f1-betting-db
+    environment:
+      POSTGRES_DB: f1betting
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d f1betting"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    networks:
+      - f1-network
+
+  # F1 Betting Service Application
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: f1-betting-app
+    ports:
+      - "8080:8080"
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: f1betting
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      SPRING_PROFILES_ACTIVE: default
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - f1-network
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+
+networks:
+  f1-network:
+    driver: bridge

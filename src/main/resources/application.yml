@@ -1,0 +1,101 @@
+# F1 Betting Service Configuration
+server:
+  port: 8080
+
+spring:
+  application:
+    name: f1-betting-service
+  
+  # Pagination Configuration
+  data:
+    web:
+      pageable:
+        default-page-size: 10
+        max-page-size: 15
+        one-indexed-parameters: false
+        page-parameter: page
+        size-parameter: size
+
+  # Database Configuration
+  datasource:
+    url: jdbc:postgresql://${DB_HOST:localhost}:${DB_PORT:5432}/${DB_NAME:f1betting}
+    username: ${DB_USERNAME:postgres}
+    password: ${DB_PASSWORD:postgres}
+    driver-class-name: org.postgresql.Driver
+
+  # JPA Configuration
+  jpa:
+    hibernate:
+      ddl-auto: validate
+    show-sql: false
+    properties:
+      hibernate:
+        dialect: org.hibernate.dialect.PostgreSQLDialect
+        format_sql: true
+    open-in-view: false
+
+  # Flyway Configuration
+  flyway:
+    enabled: true
+    baseline-on-migrate: true
+    baseline-version: 0
+    locations: classpath:db/migration
+    validate-on-migrate: true
+
+  # Cache Configuration
+  cache:
+    type: caffeine
+    cache-names: sessions, drivers
+    caffeine:
+      spec: maximumSize=500,expireAfterWrite=3600s
+
+# OpenF1 API Configuration
+openf1:
+  api:
+    base-url: https://api.openf1.org/v1
+
+# OpenFeign Configuration
+spring.cloud.openfeign:
+  client:
+    config:
+      default:
+        connectTimeout: 5000
+        readTimeout: 10000
+        loggerLevel: basic
+
+# Logging Configuration
+logging:
+  level:
+    root: INFO
+    com.f1betting: DEBUG
+    org.springframework.web: INFO
+    org.hibernate.SQL: WARN
+    org.flywaydb: INFO
+    io.github.resilience4j: DEBUG
+    org.springframework.cache: DEBUG
+
+# Swagger/OpenAPI Configuration
+springdoc:
+  api-docs:
+    path: /api-docs
+  swagger-ui:
+    path: /swagger-ui.html
+    operationsSorter: method
+    tagsSorter: alpha
+  info:
+    title: F1 Betting Service API
+    description: API for placing bets on F1 race events
+    version: 1.0.0
+
+# Actuator Configuration
+management:
+  endpoints:
+    web:
+      exposure:
+        include: health, info, metrics, circuit-breakers, caches
+  endpoint:
+    health:
+      show-details: always
+  health:
+    circuit-breakers:
+      enabled: true
