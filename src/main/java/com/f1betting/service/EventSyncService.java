@@ -38,7 +38,7 @@ public class EventSyncService {
     private final DriverMapper driverMapper;
     private final CacheManager cacheManager;
 
-    @Scheduled(initialDelayString = "${sync.initialDelay:1000}", fixedRateString = "${sync.fixedRate:30000}")
+    @Scheduled(initialDelayString = "${sync.initialDelay:1000}", fixedRateString = "${sync.fixedRate:300000}")
     public void scheduledSync() {
         log.info("Start sync events");
         boolean isDatabaseEmpty = eventRepository.count() == 0;
